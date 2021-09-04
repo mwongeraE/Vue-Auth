@@ -22,7 +22,7 @@ export default new Vuex.Store({
   },
   actions: {
     signup ({commit}, authData) {
-      axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyD_3QHY4l8Adp5RV2Fg7bxBK58Ulj9xaQ8', {
+      axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=[API-KEY]', {
         email: authData.email,
         password: authData.password,
         returnSecureToken: true
@@ -41,7 +41,7 @@ export default new Vuex.Store({
         .catch(error => console.log(error))
     },
     login ({commit}, authData) {
-      axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=AIzaSyD_3QHY4l8Adp5RV2Fg7bxBK58Ulj9xaQ8', {
+      axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=[API-KEY]', {
         email: authData.email,
         password: authData.password,
         returnSecureToken: true
