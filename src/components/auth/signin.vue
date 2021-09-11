@@ -3,11 +3,11 @@
     <div class="signin-form">
       <form @submit.prevent="onSubmit">
         <div class="input">
-          <label for="email">Mail</label>
+          <label for="username">Username</label>
           <input
-                  type="email"
-                  id="email"
-                  v-model="email">
+                  type="username"
+                  id="username"
+                  v-model="username">
         </div>
         <div class="input">
           <label for="password">Password</label>
@@ -28,18 +28,18 @@
   export default {
     data () {
       return {
-        email: '',
+        username: '',
         password: ''
       }
     },
     methods: {
       onSubmit () {
         const formData = {
-          email: this.email,
+          username: this.username,
           password: this.password,
         }
         console.log(formData)
-        this.$store.dispatch('login', {email: formData.email, password: formData.password})
+        this.$store.dispatch('login', {username: formData.username, password: formData.password})
       }
     }
   }

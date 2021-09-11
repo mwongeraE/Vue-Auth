@@ -1,23 +1,20 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from 'axios'
+import querystring from 'querystring'
 import router from './router.js'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    idToken: null,
-    userId: null,
-    user: null
+    token: null, 
   },
   mutations: {
     authUser (state, userData) {
-      state.idToken = userData.token
-      state.userId = userData.userId
+      state.token = userData.token
     },
     clearAuth (state) {
-      state.idToken = null
-      state.userId = null
+      state.token= null
     }
   },
   actions: {
@@ -41,19 +38,28 @@ export default new Vuex.Store({
         .catch(error => console.log(error))
     },
     login ({commit}, authData) {
-      axios.post('https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=[API-KEY]', {
-        email: authData.email,
-        password: authData.password,
-        returnSecureToken: true
+      axios.request({
+        method: 'POST',
+        url: 'http://20.54.248.198:8080/auth/realms/crs/protocol/openid-connect/token',
+        headers: {'content-type': 'application/x-www-form-urlencoded'},
+        data: querystring.stringify({
+          grant_type: 'password',
+          client_id: 'birth-registration-portal',
+          username: authData.username,
+          password: authData.password
+        })
       })
         .then(res => {
-          console.log(res)
-          localStorage.setItem('token', res.data.idToken)
-          localStorage.setItem('userId', res.data.localId)
+          console.log("Access Token " + res.data.access_token)
+          console.log("Refresh Token " + res.data.refresh_token)
+          localStorage.setItem('token', res.data.access_token)
+          
+          // localStorage.setItem('userId', res.data.localId)
           commit('authUser', {
-            token: res.data.idToken,
-            userId: res.data.localId
+            token: res.data.access_token,
+  
           })
+          console.log(this.state.token)
           router.push("/dashboard")
         })
         .catch(error => console.log(error))
@@ -61,18 +67,15 @@ export default new Vuex.Store({
     logout ({commit}) {
       commit('clearAuth')
       localStorage.removeItem('token')
-      localStorage.removeItem('userId')
-      router.replace('/')
+      router.replace('/signin')
     },
     AutoLogin ({commit}) {
       const token = localStorage.getItem('token')
       if (!token) {
         return
       }
-      const userId = localStorage.getItem('userId')
       commit('authUser', {
         token: token,
-        userId: userId
       })
     }
   },
@@ -102,7 +105,7 @@ axios.request(options).then(function (response) {
       return state.user
     },
     ifAuthenticated (state) {
-      return state.idToken !== null
+      return state.access_token !== null
     }
   }
 })
